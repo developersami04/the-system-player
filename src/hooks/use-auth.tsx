@@ -28,7 +28,6 @@ interface AuthContextType {
   user: User | null;
   appUser: AppUser | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
   signUpWithEmailAndPassword: (email: string, password: string, displayName: string) => Promise<string | undefined>;
   signInWithEmailAndPassword: (email: string, password: string) => Promise<string | undefined>;
@@ -137,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const handleSignIn = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
+  const handleSignIn = async (provider: FacebookAuthProvider) => {
     setLoading(true);
     try {
         const result = await signInWithPopup(auth, provider);
@@ -153,11 +152,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return getFirebaseAuthErrorMessage(error.code || 'auth/internal-error');
     }
   }
-
-  const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    await handleSignIn(provider)
-  };
 
   const signInWithFacebook = async () => {
     const provider = new FacebookAuthProvider();
@@ -236,7 +230,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     appUser,
     loading,
-    signInWithGoogle,
     signInWithFacebook,
     signOut,
     updateUserXp,
