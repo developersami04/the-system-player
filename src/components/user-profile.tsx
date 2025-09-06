@@ -5,15 +5,14 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/hooks/use-auth';
 
 export function UserProfile() {
-  const { user } = useAuth();
+  const { user, appUser } = useAuth();
 
-  // Dummy data for progress, replace with real data later
-  const level = 12;
-  const xp = 450;
-  const xpToNextLevel = 1000;
+  const level = appUser?.level || 1;
+  const xp = appUser?.xp || 0;
+  const xpToNextLevel = level * 1000;
   const xpPercentage = (xp / xpToNextLevel) * 100;
 
-  if (!user) {
+  if (!user || !appUser) {
     return null;
   }
 

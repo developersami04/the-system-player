@@ -21,6 +21,7 @@ const addTask = async (userId: string, task: { title: string; category: string; 
       ...task,
       completed: false,
       createdAt: serverTimestamp(),
+      xp: 100, // Default XP for a new task
     });
   } catch (error) {
     console.error("Error adding task: ", error);

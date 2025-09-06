@@ -20,7 +20,7 @@ import type { Task } from "@/lib/types";
 import { AddTaskSheet } from "@/components/add-task-sheet";
 
 export default function TasksPage() {
-  const { user } = useAuth();
+  const { user, updateUserXp } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isSheetOpen, setSheetOpen] = useState(false);
 
@@ -36,10 +36,16 @@ export default function TasksPage() {
     fetchTasks();
   }, [user]);
 
-  const handleTaskToggle = async (taskId: string, completed: boolean) => {
+  const handleTaskToggle = async (task: Task, completed: boolean) => {
     if (user) {
-      await updateTask(user.uid, taskId, { completed });
-      setTasks(tasks.map(t => t.id === taskId ? { ...t, completed } : t));
+      await updateTask(user.uid, task.id, { completed });
+      setTasks(tasks.map(t => t.id === task.id ? { ...t, completed } : t));
+
+      if (completed) {
+        await updateUserXp(task.xp || 100);
+      } else {
+        await updateUserXp(-(task.xp || 100));
+      }
     }
   };
 
@@ -72,6 +78,7 @@ export default function TasksPage() {
               <TableHead className="w-[50px]"></TableHead>
               <TableHead>Task</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>XP</TableHead>
               <TableHead>Due Date</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-[50px] text-right"></TableHead>
@@ -83,7 +90,7 @@ export default function TasksPage() {
                 <TableCell>
                   <Checkbox 
                     checked={task.completed} 
-                    onCheckedChange={(checked) => handleTaskToggle(task.id, !!checked)}
+                    onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
                     aria-label="Mark task as complete" 
                   />
                 </TableCell>
@@ -93,7 +100,10 @@ export default function TasksPage() {
                 <TableCell>
                   <Badge variant="outline">{task.category}</Badge>
                 </TableCell>
-                <TableCell>{format(task.dueDate, "PPP")}</TableCell>
+                <TableCell>
+                  <Badge variant="secondary">+{task.xp || 100} XP</Badge>
+                </TableCell>
+                <TableCell>{format(new Date(task.dueDate), "PPP")}</TableCell>
                 <TableCell>
                   <Badge variant={task.completed ? "secondary" : "default"} className={task.completed ? "" : ""}>
                     {task.completed ? "Completed" : "Pending"}

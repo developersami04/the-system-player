@@ -23,17 +23,16 @@ import { RecommendationForm } from "@/components/recommendation-form";
 import { dailyTasks, currentMissions, rankings } from "@/lib/data";
 import { useAuth } from "@/hooks/use-auth";
 
-const staticUser = {
-  name: "Player One",
-  level: 12,
-  xp: 450,
-  xpToNextLevel: 1000,
-};
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  const displayName = user?.displayName || staticUser.name;
-  const xpPercentage = (staticUser.xp / staticUser.xpToNextLevel) * 100;
+  const { user, appUser } = useAuth();
+  
+  const displayName = user?.displayName || "Player One";
+  const level = appUser?.level || 1;
+  const xp = appUser?.xp || 0;
+  const xpToNextLevel = level * 1000;
+  const xpPercentage = (xp / xpToNextLevel) * 100;
+
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -48,11 +47,11 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <div className="text-lg font-bold">LV. {staticUser.level}</div>
+            <div className="text-lg font-bold">LV. {level}</div>
             <div className="flex-1">
               <Progress value={xpPercentage} className="h-4" />
               <div className="text-right text-xs text-muted-foreground mt-1">
-                {staticUser.xp} / {staticUser.xpToNextLevel} XP
+                {xp} / {xpToNextLevel} XP
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ export interface Task {
     category: typeof TASK_CATEGORIES[number];
     completed: boolean;
     dueDate: Date;
+    xp: number;
 }
 
 export interface Mission {
@@ -36,4 +37,14 @@ export interface Reward {
     title: string;
     milestone: string;
     unlocked: boolean;
+}
+
+export interface AppUser {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+    createdAt: Date;
+    level: number;
+    xp: number;
 }

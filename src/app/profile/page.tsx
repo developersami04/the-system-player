@@ -12,9 +12,6 @@ import { useAuth } from "@/hooks/use-auth";
 
 const staticUser = {
     name: "Player One",
-    level: 12,
-    xp: 450,
-    xpToNextLevel: 1000,
     avatarUrl: "https://picsum.photos/100",
     joinDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
     title: "Novice Adventurer"
@@ -27,14 +24,22 @@ const stats = {
 }
 
 export default function ProfilePage() {
-    const { user } = useAuth();
+    const { user, appUser } = useAuth();
 
     const displayName = user?.displayName || staticUser.name;
     const avatarUrl = user?.photoURL || staticUser.avatarUrl;
-    const joinDate = user?.metadata.creationTime ? new Date(user.metadata.creationTime) : staticUser.joinDate;
+    const joinDate = (appUser?.createdAt && new Date(appUser.createdAt)) || staticUser.joinDate;
 
-    const xpPercentage = (staticUser.xp / staticUser.xpToNextLevel) * 100;
+    const level = appUser?.level || 1;
+    const xp = appUser?.xp || 0;
+    const xpToNextLevel = level * 1000;
+    const xpPercentage = (xp / xpToNextLevel) * 100;
+
     const recentAchievements = achievements.filter(a => a.unlocked).slice(0, 5);
+
+    if (!appUser) {
+        return <div>Loading profile...</div>
+    }
 
     return (
         <div className="space-y-6">
@@ -43,8 +48,8 @@ export default function ProfilePage() {
                 <CardContent className="p-6 pt-0">
                     <div className="flex items-end -mt-16">
                         <Avatar className="h-32 w-32 border-4 border-background">
-                            <AvatarImage src={avatarUrl} alt={displayName} data-ai-hint="avatar" />
-                            <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={avatarUrl} alt={displayName!} data-ai-hint="avatar" />
+                            <AvatarFallback>{displayName!.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="ml-4 mb-2">
                             <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
@@ -59,12 +64,12 @@ export default function ProfilePage() {
                     <div className="mt-4">
                         <div className="flex items-center gap-4">
                             <Badge variant="secondary" className="text-base">{staticUser.title}</Badge>
-                            <div className="text-lg font-bold">LV. {staticUser.level}</div>
+                            <div className="text-lg font-bold">LV. {level}</div>
                         </div>
                         <div className="mt-2">
                             <Progress value={xpPercentage} className="h-4" />
                             <div className="text-right text-xs text-muted-foreground mt-1">
-                                {staticUser.xp} / {staticUser.xpToNextLevel} XP to next level
+                                {xp} / {xpToNextLevel} XP to next level
                             </div>
                         </div>
                     </div>
