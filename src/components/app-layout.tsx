@@ -22,6 +22,7 @@ import {
   Users,
   Gift,
   Gem,
+  User,
 } from 'lucide-react';
 import { UserProfile } from './user-profile';
 import { DashboardHeader } from './dashboard-header';
@@ -29,6 +30,7 @@ import { Separator } from './ui/separator';
 
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
+  { href: '/profile', label: 'Profile', icon: User },
   { href: '/tasks', label: 'Tasks', icon: CheckSquare },
   { href: '/missions', label: 'Missions', icon: Flame },
   { href: '/achievements', label: 'Achievements', icon: Trophy },
