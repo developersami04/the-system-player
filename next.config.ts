@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'https'
         hostname: 'lh3.googleusercontent.com',
         port: '',
         pathname: '/**',
@@ -40,9 +40,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   },
-  experimental: {
-    serverComponentsExternalPackages: ['firebase'],
-  }
+  serverExternalPackages: ['firebase'],
 };
 
 export default nextConfig;
