@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gem, Facebook, Loader2 } from 'lucide-react';
+import { Gem, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,7 +27,7 @@ const signInSchema = z.object({
 });
 
 export default function LoginPage() {
-  const { user, loading, signInWithFacebook, signUpWithEmailAndPassword, signInWithEmailAndPassword } = useAuth();
+  const { user, loading, signUpWithEmailAndPassword, signInWithEmailAndPassword } = useAuth();
   const router = useRouter();
   const [authError, setAuthError] = useState<string | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -188,27 +188,6 @@ export default function LoginPage() {
             <p className="text-center text-sm text-destructive mt-4">{authError}</p>
           )}
 
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-4">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={signInWithFacebook}
-              disabled={loading}
-            >
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <><Facebook className="mr-2 h-4 w-4" /> Facebook</>}
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>

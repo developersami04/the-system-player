@@ -11,9 +11,6 @@ import {
 } from 'react';
 import {
   onAuthStateChanged,
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-  signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
   updateProfile,
@@ -28,7 +25,6 @@ interface AuthContextType {
   user: User | null;
   appUser: AppUser | null;
   loading: boolean;
-  signInWithFacebook: () => Promise<void>;
   signUpWithEmailAndPassword: (email: string, password: string, displayName: string) => Promise<string | undefined>;
   signInWithEmailAndPassword: (email: string, password: string) => Promise<string | undefined>;
   signOut: () => Promise<void>;
@@ -136,28 +132,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const handleSignIn = async (provider: FacebookAuthProvider) => {
-    setLoading(true);
-    try {
-        const result = await signInWithPopup(auth, provider);
-        if (result.user) {
-          await fetchAppUser(result.user);
-          router.push('/dashboard');
-        } else {
-          throw new Error("No user returned from sign-in provider.");
-        }
-    } catch (error: any) {
-        console.error('Sign in error:', error);
-        setLoading(false);
-        return getFirebaseAuthErrorMessage(error.code || 'auth/internal-error');
-    }
-  }
-
-  const signInWithFacebook = async () => {
-    const provider = new FacebookAuthProvider();
-    await handleSignIn(provider)
-  };
-
   const signUpWithEmailAndPassword = async (email: string, password: string, displayName: string) => {
     setLoading(true);
     try {
@@ -230,7 +204,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     appUser,
     loading,
-    signInWithFacebook,
     signOut,
     updateUserXp,
     signUpWithEmailAndPassword,

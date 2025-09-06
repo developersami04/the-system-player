@@ -3,7 +3,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import { Gem, CheckCircle, Flame, Trophy, Users, Gift, Star, Facebook } from 'lucide-react';
+import { Gem, CheckCircle, Flame, Trophy, Users, Gift, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -42,7 +42,7 @@ const features = [
   ];
 
 export default function LandingPage() {
-  const { user, loading, signInWithFacebook } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -125,8 +125,8 @@ export default function LandingPage() {
               Join thousands of others on their quest for self-improvement. Your adventure begins now.
             </p>
             <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Button size="lg" variant="outline" className="h-12 text-lg" onClick={signInWithFacebook}>
-                <Facebook className="mr-2 h-5 w-5" /> Sign Up with Facebook
+              <Button size="lg" className="h-12 text-lg" asChild>
+                <Link href="/login">Create Your Account</Link>
               </Button>
             </div>
           </div>
