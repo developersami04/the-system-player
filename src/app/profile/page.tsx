@@ -42,12 +42,12 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="space-y-6">
-            <Card className="overflow-hidden">
+        <div className="space-y-6 animate-fade-in">
+            <Card className="overflow-hidden animate-fade-in-up">
                 <div className="h-24 bg-primary/20" />
                 <CardContent className="p-6 pt-0">
                     <div className="flex items-end -mt-16">
-                        <Avatar className="h-32 w-32 border-4 border-background">
+                        <Avatar className="h-32 w-32 border-4 border-background transition-transform hover:scale-105">
                             <AvatarImage src={avatarUrl} alt={displayName!} data-ai-hint="avatar" />
                             <AvatarFallback>{displayName!.charAt(0)}</AvatarFallback>
                         </Avatar>
@@ -77,7 +77,7 @@ export default function ProfilePage() {
             </Card>
 
             <div className="grid gap-6 md:grid-cols-3">
-                <Card>
+                <Card className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium">Tasks Completed</CardTitle>
                         <Check className="h-4 w-4 text-muted-foreground" />
@@ -86,7 +86,7 @@ export default function ProfilePage() {
                         <div className="text-2xl font-bold">{stats.tasksCompleted}</div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium">Missions in Progress</CardTitle>
                         <Target className="h-4 w-4 text-muted-foreground" />
@@ -95,7 +95,7 @@ export default function ProfilePage() {
                         <div className="text-2xl font-bold">{stats.missionsInProgress}</div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium">Achievements Unlocked</CardTitle>
                         <Trophy className="h-4 w-4 text-muted-foreground" />
@@ -107,7 +107,7 @@ export default function ProfilePage() {
             </div>
             
             <div className="grid gap-6 lg:grid-cols-2">
-                <Card>
+                <Card className="animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                     <CardHeader>
                         <CardTitle>Recent Achievements</CardTitle>
                         <CardDescription>Your latest accomplishments.</CardDescription>
@@ -129,7 +129,7 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="animate-fade-in-up" style={{ animationDelay: '500ms' }}>
                     <CardHeader>
                         <CardTitle>In-Progress Missions</CardTitle>
                         <CardDescription>Quests you are currently undertaking.</CardDescription>

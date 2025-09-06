@@ -12,7 +12,7 @@ import { allMissions } from "@/lib/data";
 
 export default function MissionsPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-2xl font-bold tracking-tight font-headline">Mission Board</h2>
         <p className="text-muted-foreground">
@@ -20,8 +20,12 @@ export default function MissionsPage() {
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {allMissions.map((mission) => (
-          <Card key={mission.id} className="flex flex-col">
+        {allMissions.map((mission, i) => (
+          <Card 
+            key={mission.id} 
+            className="flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 animate-fade-in-up"
+            style={{ animationDelay: `${i * 100}ms` }}
+          >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Flame className="h-6 w-6 text-primary" />

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 export default function RewardsPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-2xl font-bold tracking-tight font-headline">Rewards Vault</h2>
         <p className="text-muted-foreground">
@@ -20,11 +20,12 @@ export default function RewardsPage() {
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {rewards.map((reward) => (
+        {rewards.map((reward, i) => (
           <Card
             key={reward.id}
+            style={{ animationDelay: `${i * 100}ms` }}
             className={cn(
-              "flex flex-col transition-all",
+              "flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 animate-fade-in-up",
               reward.unlocked
                 ? "border-primary/50"
                 : "border-dashed"

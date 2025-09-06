@@ -36,8 +36,8 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <Card className="lg:col-span-3 bg-card/50 backdrop-blur-sm">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-fade-in">
+      <Card className="lg:col-span-3 bg-card/50 backdrop-blur-sm animate-fade-in-up">
         <CardHeader>
           <CardTitle className="font-headline text-2xl md:text-3xl">
             Welcome Back, {displayName}
@@ -59,7 +59,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline text-xl">Daily Tasks</CardTitle>
           <Sword className="h-6 w-6 text-accent" />
@@ -92,7 +92,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline text-xl">
             Current Missions
@@ -119,7 +119,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
       
-      <Card className="md:col-span-2 lg:col-span-1">
+      <Card className="md:col-span-2 lg:col-span-1 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
         <CardHeader>
           <CardTitle className="font-headline text-xl">Rankings</CardTitle>
           <CardDescription>Your position on the leaderboard.</CardDescription>
@@ -149,7 +149,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      <Card className="lg:col-span-3">
+      <Card className="lg:col-span-3 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
         <CardHeader>
           <CardTitle className="font-headline text-xl">
             Personalized Recommendations

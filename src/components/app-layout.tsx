@@ -144,7 +144,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                        "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
+                        "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground transition-colors hover:text-foreground",
                         pathname === item.href && "bg-muted text-foreground"
                     )}
                     >
@@ -173,7 +173,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-9 w-9 transition-transform hover:scale-110">
                     <AvatarImage src={user.photoURL!} alt={user.displayName!} data-ai-hint="avatar" />
                     <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>

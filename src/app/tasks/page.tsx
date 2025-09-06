@@ -59,7 +59,7 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight font-headline">Task List</h2>
@@ -73,7 +73,7 @@ export default function TasksPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border">
+      <div className="rounded-lg border animate-fade-in-up">
         <Table>
           <TableHeader>
             <TableRow>
@@ -88,7 +88,7 @@ export default function TasksPage() {
           </TableHeader>
           <TableBody>
             {tasks.map((task) => (
-              <TableRow key={task.id} className={task.completed ? "bg-card/50" : ""}>
+              <TableRow key={task.id} className={`transition-colors ${task.completed ? "bg-card/50" : ""}`}>
                 <TableCell>
                   <Checkbox 
                     checked={task.completed} 
@@ -113,7 +113,7 @@ export default function TasksPage() {
                 </TableCell>
                 <TableCell className="text-right">
                     <Button variant="ghost" size="icon" onClick={() => handleDeleteTask(task.id)}>
-                        <Trash2 className="h-4 w-4 text-muted-foreground" />
+                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                     </Button>
                 </TableCell>
               </TableRow>

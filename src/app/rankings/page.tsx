@@ -12,14 +12,14 @@ import { rankings } from "@/lib/data";
 
 export default function RankingsPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-2xl font-bold tracking-tight font-headline">Leaderboard</h2>
         <p className="text-muted-foreground">
           See how you stack up against other players in the system.
         </p>
       </div>
-      <div className="rounded-lg border">
+      <div className="rounded-lg border animate-fade-in-up">
         <Table>
           <TableHeader>
             <TableRow>
@@ -39,7 +39,7 @@ export default function RankingsPage() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-10 w-10 transition-transform hover:scale-105">
                       <AvatarImage src={player.avatarUrl} alt={player.name} data-ai-hint="avatar" />
                       <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                     </Avatar>
