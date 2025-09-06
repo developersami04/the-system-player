@@ -3,13 +3,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
 const firebaseConfig = {
-    apiKey: 'AIzaSyBVTeurWbsOgsLIQ-GzuVdoE442N5YlXMg',
-    authDomain: 'system-ascent.firebaseapp.com',
-    projectId: 'system-ascent',
-    storageBucket: 'system-ascent.appspot.com',
-    messagingSenderId: '145955106382',
-    appId: '1:145955106382:web:e35988ebadc2ffb2a31d1f',
-    measurementId: 'G-7PE246J99W',
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
