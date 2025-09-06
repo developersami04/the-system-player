@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 const GoogleIcon = () => <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-76.3 64.5c-24.5-23.4-58.3-38.2-96.6-38.2-87.5 0-159.2 71.7-159.2 159.2s71.7 159.2 159.2 159.2c94.3 0 135.3-65.6 140.8-103.9H248v-85.3h236.1c2.3 12.7 3.9 26.9 3.9 41.4z"></path></svg>;
 
 const signUpSchema = z.object({
-  displayName: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
+  displayName: z.string().min(3, { message: 'Nickname must be at least 3 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
@@ -102,7 +102,7 @@ export default function LoginPage() {
                             <FormItem>
                               <Label htmlFor="email-signin">Email</Label>
                               <FormControl>
-                                <Input id="email-signin" type="email" placeholder="m@example.com" {...field} />
+                                <Input id="email-signin" type="email" placeholder="m@example.com" {...field} autoComplete="email" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -115,7 +115,7 @@ export default function LoginPage() {
                             <FormItem>
                               <Label htmlFor="password-signin">Password</Label>
                               <FormControl>
-                                <Input id="password-signin" type="password" {...field} />
+                                <Input id="password-signin" type="password" {...field} autoComplete="current-password" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -142,9 +142,9 @@ export default function LoginPage() {
                           name="displayName"
                           render={({ field }) => (
                             <FormItem>
-                              <Label htmlFor="displayName">Username</Label>
+                              <Label htmlFor="displayName">Nickname</Label>
                               <FormControl>
-                                <Input id="displayName" placeholder="Player One" {...field} />
+                                <Input id="displayName" placeholder="Player One" {...field} autoComplete="nickname" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -157,7 +157,7 @@ export default function LoginPage() {
                             <FormItem>
                               <Label htmlFor="email-signup">Email</Label>
                               <FormControl>
-                                <Input id="email-signup" type="email" placeholder="m@example.com" {...field} />
+                                <Input id="email-signup" type="email" placeholder="m@example.com" {...field} autoComplete="email"/>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -170,7 +170,7 @@ export default function LoginPage() {
                             <FormItem>
                               <Label htmlFor="password-signup">Password</Label>
                               <FormControl>
-                                <Input id="password-signup" type="password" {...field} />
+                                <Input id="password-signup" type="password" {...field} autoComplete="new-password" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -224,5 +224,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
