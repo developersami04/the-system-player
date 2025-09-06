@@ -1,3 +1,5 @@
+'use client';
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,8 +8,9 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { achievements, dailyTasks, currentMissions } from "@/lib/data";
 import { Check, Edit, Medal, Target, Trophy } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
-const user = {
+const staticUser = {
     name: "Player One",
     level: 12,
     xp: 450,
@@ -24,7 +27,13 @@ const stats = {
 }
 
 export default function ProfilePage() {
-    const xpPercentage = (user.xp / user.xpToNextLevel) * 100;
+    const { user } = useAuth();
+
+    const displayName = user?.displayName || staticUser.name;
+    const avatarUrl = user?.photoURL || staticUser.avatarUrl;
+    const joinDate = user?.metadata.creationTime ? new Date(user.metadata.creationTime) : staticUser.joinDate;
+
+    const xpPercentage = (staticUser.xp / staticUser.xpToNextLevel) * 100;
     const recentAchievements = achievements.filter(a => a.unlocked).slice(0, 5);
 
     return (
@@ -34,12 +43,12 @@ export default function ProfilePage() {
                 <CardContent className="p-6 pt-0">
                     <div className="flex items-end -mt-16">
                         <Avatar className="h-32 w-32 border-4 border-background">
-                            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="avatar" />
-                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={avatarUrl} alt={displayName} data-ai-hint="avatar" />
+                            <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="ml-4 mb-2">
-                            <h1 className="text-3xl font-bold font-headline">{user.name}</h1>
-                            <p className="text-sm text-muted-foreground">Member since {user.joinDate.toLocaleDateString()}</p>
+                            <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
+                            <p className="text-sm text-muted-foreground">Member since {joinDate.toLocaleDateString()}</p>
                         </div>
                         <Button variant="outline" size="icon" className="ml-auto mb-2">
                             <Edit className="h-4 w-4" />
@@ -49,13 +58,13 @@ export default function ProfilePage() {
 
                     <div className="mt-4">
                         <div className="flex items-center gap-4">
-                            <Badge variant="secondary" className="text-base">{user.title}</Badge>
-                            <div className="text-lg font-bold">LV. {user.level}</div>
+                            <Badge variant="secondary" className="text-base">{staticUser.title}</Badge>
+                            <div className="text-lg font-bold">LV. {staticUser.level}</div>
                         </div>
                         <div className="mt-2">
                             <Progress value={xpPercentage} className="h-4" />
                             <div className="text-right text-xs text-muted-foreground mt-1">
-                                {user.xp} / {user.xpToNextLevel} XP to next level
+                                {staticUser.xp} / {staticUser.xpToNextLevel} XP to next level
                             </div>
                         </div>
                     </div>

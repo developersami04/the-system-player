@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -27,6 +27,8 @@ import {
 import { UserProfile } from './user-profile';
 import { DashboardHeader } from './dashboard-header';
 import { Separator } from './ui/separator';
+import { useAuth } from '@/hooks/use-auth';
+import { useEffect } from 'react';
 
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
@@ -40,6 +42,27 @@ const menuItems = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user && pathname !== '/login') {
+      router.push('/login');
+    }
+  }, [user, loading, pathname, router]);
+
+
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
+  
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Gem className="h-12 w-12 animate-pulse text-primary" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>

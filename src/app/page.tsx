@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -19,24 +21,26 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Flame, Sword } from "lucide-react";
 import { RecommendationForm } from "@/components/recommendation-form";
 import { dailyTasks, currentMissions, rankings } from "@/lib/data";
+import { useAuth } from "@/hooks/use-auth";
 
-const user = {
+const staticUser = {
   name: "Player One",
   level: 12,
   xp: 450,
   xpToNextLevel: 1000,
-  avatarUrl: "https://picsum.photos/100",
 };
 
 export default function DashboardPage() {
-  const xpPercentage = (user.xp / user.xpToNextLevel) * 100;
+  const { user } = useAuth();
+  const displayName = user?.displayName || staticUser.name;
+  const xpPercentage = (staticUser.xp / staticUser.xpToNextLevel) * 100;
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <Card className="lg:col-span-3 bg-card/50 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="font-headline text-2xl md:text-3xl">
-            Welcome Back, {user.name}
+            Welcome Back, {displayName}
           </CardTitle>
           <CardDescription>
             Your progress is looking great. Keep it up!
@@ -44,11 +48,11 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <div className="text-lg font-bold">LV. {user.level}</div>
+            <div className="text-lg font-bold">LV. {staticUser.level}</div>
             <div className="flex-1">
               <Progress value={xpPercentage} className="h-4" />
               <div className="text-right text-xs text-muted-foreground mt-1">
-                {user.xp} / {user.xpToNextLevel} XP
+                {staticUser.xp} / {staticUser.xpToNextLevel} XP
               </div>
             </div>
           </div>
@@ -129,10 +133,10 @@ export default function DashboardPage() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={player.avatarUrl} alt={player.name} data-ai-hint="avatar" />
+                        <AvatarImage src={player.name === 'Player One' && user?.photoURL ? user.photoURL : player.avatarUrl} alt={player.name} data-ai-hint="avatar" />
                         <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <span>{player.name}</span>
+                      <span>{player.name === 'Player One' && user?.displayName ? user.displayName : player.name}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-mono">
