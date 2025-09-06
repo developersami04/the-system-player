@@ -1,6 +1,6 @@
 import type { Task, Mission, UserRank, Achievement, Reward } from './types';
 
-export const dailyTasks: Omit<Task, 'dueDate'>[] = [
+export const dailyTasks: Omit<Task, 'dueDate' | 'category'>[] & { category: string }[] = [
   { id: '1', title: 'Read 30 pages of a book', category: 'Growth', completed: true },
   { id: '2', title: 'Complete a coding challenge', category: 'Skills', completed: false },
   { id: '3', title: 'Go for a 20-minute run', category: 'Health', completed: false },
@@ -82,7 +82,7 @@ export const achievements: Achievement[] = [
     { id: 'a5', title: 'Bookworm', description: 'Read 1000 pages.', unlocked: true },
     { id: 'a6', title: 'Century Mark', description: 'Complete 100 tasks.', unlocked: false },
     { id: 'a7', title: 'Mission Complete', description: 'Finish your first mission.', unlocked: false },
-    { id: 'a8', title: 'Polymath', description: 'Complete a task in 5 different categories.', unlocked: false },
+    { id: 'a8', 'title': 'Polymath', 'description': 'Complete a task in 5 different categories.', unlocked: false },
     { id: 'a9', title: 'Specialist', description: 'Complete 25 tasks in a single category.', unlocked: false },
     { id: 'a10', title: 'Top 10 Player', description: 'Reach the top 10 in rankings.', unlocked: false },
     { id: 'a11', title: 'Grandmaster', description: 'Reach level 50.', unlocked: false },

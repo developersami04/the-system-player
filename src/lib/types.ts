@@ -1,7 +1,9 @@
+export const TASK_CATEGORIES = ['Growth', 'Skills', 'Health', 'Creative', 'Chores'] as const;
+
 export interface Task {
     id: string;
     title: string;
-    category: 'Growth' | 'Skills' | 'Health' | 'Creative' | 'Chores';
+    category: typeof TASK_CATEGORIES[number];
     completed: boolean;
     dueDate: Date;
 }
