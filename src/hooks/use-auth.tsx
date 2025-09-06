@@ -168,7 +168,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmailAndPassword = async (email: string, password: string) => {
     setLoading(true);
     try {
-      await firebaseSignInWithEmailAndPassword(auth, email, password);
+      const userCredential = await firebaseSignInWithEmailAndPassword(auth, email, password);
+      await fetchAppUser(userCredential.user);
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Sign in error:', error);

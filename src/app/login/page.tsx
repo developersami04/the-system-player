@@ -32,6 +32,8 @@ export default function LoginPage() {
   const { user, loading, signInWithGoogle, signInWithFacebook, signUpWithEmailAndPassword, signInWithEmailAndPassword } = useAuth();
   const router = useRouter();
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   const signUpForm = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -51,18 +53,22 @@ export default function LoginPage() {
   
   const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
     setAuthError(null);
+    setIsSigningUp(true);
     const error = await signUpWithEmailAndPassword(values.email, values.password, values.displayName);
     if (error) {
       setAuthError(error);
     }
+    setIsSigningUp(false);
   };
 
   const handleSignIn = async (values: z.infer<typeof signInSchema>) => {
     setAuthError(null);
+    setIsSigningIn(true);
     const error = await signInWithEmailAndPassword(values.email, values.password);
     if (error) {
         setAuthError(error);
     }
+    setIsSigningIn(false);
   };
 
 
@@ -115,8 +121,8 @@ export default function LoginPage() {
                             </FormItem>
                           )}
                         />
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        <Button type="submit" className="w-full" disabled={isSigningIn}>
+                            {isSigningIn && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Sign In
                         </Button>
                       </form>
@@ -170,8 +176,8 @@ export default function LoginPage() {
                             </FormItem>
                           )}
                         />
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        <Button type="submit" className="w-full" disabled={isSigningUp}>
+                            {isSigningUp && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Create Account
                         </Button>
                       </form>
