@@ -91,40 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       if (user) {
         setUser(user);
-        const userRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(userRef).catch(err => {
-            console.warn("Could not fetch user document, maybe offline?", err)
-            return null;
-        });
-
-        if (docSnap && docSnap.exists()) {
-            const userData = docSnap.data() as AppUser;
-            setAppUser({
-                ...userData,
-                // @ts-ignore
-                createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
-            });
-        } else if (docSnap === null) {
-            // Offline and no cached doc, do nothing, wait for online
-        } else {
-          // New user, create a document in Firestore
-          const newUser: AppUser = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            // @ts-ignore
-            createdAt: serverTimestamp(),
-            level: 1,
-            xp: 0,
-          };
-          try {
-            await setDoc(userRef, newUser);
-            setAppUser({ ...newUser, createdAt: new Date() });
-          } catch(e) {
-             console.error("Error creating user doc", e)
-          }
-        }
+        await fetchAppUser(user);
       } else {
         setUser(null);
         setAppUser(null);
@@ -133,15 +100,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchAppUser]);
+
+  const createNewAppUser = async (firebaseUser: User) => {
+    const userRef = doc(db, 'users', firebaseUser.uid);
+    const docSnap = await getDoc(userRef);
+
+    if (!docSnap.exists()) {
+      const newUser: AppUser = {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+        // @ts-ignore
+        createdAt: serverTimestamp(),
+        level: 1,
+        xp: 0,
+      };
+      try {
+        await setDoc(userRef, newUser);
+        setAppUser({ ...newUser, createdAt: new Date() });
+      } catch(e) {
+          console.error("Error creating user doc", e)
+      }
+    }
+  }
 
   const handleSignIn = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
     setLoading(true);
     try {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        await createNewAppUser(result.user);
         router.push('/dashboard');
     } catch (error: any) {
         console.error('Sign in error:', error);
+        setLoading(false);
         return getFirebaseAuthErrorMessage(error.code);
     }
   }
@@ -161,10 +154,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName });
-      // The onAuthStateChanged listener will handle the rest
+      await createNewAppUser(userCredential.user);
+      // The onAuthStateChanged listener will also fire, but we can pre-emptively set the user
+      setUser(userCredential.user);
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Sign up error:', error);
+      setLoading(false);
       return getFirebaseAuthErrorMessage(error.code);
     }
   };
@@ -176,6 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Sign in error:', error);
+      setLoading(false);
       return getFirebaseAuthErrorMessage(error.code);
     }
   };
