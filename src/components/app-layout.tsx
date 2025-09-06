@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -18,7 +19,7 @@ import {
   Rocket,
   Search,
 } from 'lucide-react';
-import { UserProfile } from './user-profile';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect } from 'react';
@@ -167,7 +168,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 ))}
               </nav>
               <div className="mt-auto">
-                <UserProfile />
+                <Card>
+                    <CardHeader className="p-2 pt-0 md:p-4">
+                      <CardTitle>Level Up!</CardTitle>
+                      <CardDescription>
+                        Complete tasks to earn more XP and unlock new features.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
+                      <Button size="sm" className="w-full" asChild>
+                        <Link href="/tasks">View Tasks</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
               </div>
             </SheetContent>
           </Sheet>
