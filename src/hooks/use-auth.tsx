@@ -55,6 +55,8 @@ const getFirebaseAuthErrorMessage = (errorCode: string): string => {
       return 'The password is too weak. Please use a stronger password.';
     case 'auth/operation-not-allowed':
         return 'Email & Password sign-in is not enabled. Please contact support.';
+    case 'auth/network-request-failed':
+        return 'Network error. Please check your connection and try again.';
     default:
       return 'An unexpected error occurred. Please try again.';
   }
@@ -67,7 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchAppUser = useCallback(async (firebaseUser: User) => {
+  const fetchAppUser = useCallback(async (firebaseUser: User | null) => {
+    if (!firebaseUser) {
+      setAppUser(null);
+      return;
+    }
     const userRef = doc(db, 'users', firebaseUser.uid);
     try {
       const docSnap = await getDoc(userRef);
@@ -79,9 +85,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // @ts-ignore
           createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
         });
+      } else {
+        // This case might happen if user exists in Auth but not in Firestore.
+        // We can create it here, or log an issue.
+        await createNewAppUser(firebaseUser);
       }
     } catch (error) {
         console.error("Error fetching app user:", error);
+        setAppUser(null);
         // Handle offline error gracefully if needed
     }
   }, []);
@@ -130,12 +141,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
         const result = await signInWithPopup(auth, provider);
-        await createNewAppUser(result.user);
-        router.push('/dashboard');
+        if (result.user) {
+          await fetchAppUser(result.user);
+          router.push('/dashboard');
+        } else {
+          throw new Error("No user returned from sign-in provider.");
+        }
     } catch (error: any) {
         console.error('Sign in error:', error);
         setLoading(false);
-        return getFirebaseAuthErrorMessage(error.code);
+        return getFirebaseAuthErrorMessage(error.code || 'auth/internal-error');
     }
   }
 
@@ -155,8 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName });
       await createNewAppUser(userCredential.user);
-      // The onAuthStateChanged listener will also fire, but we can pre-emptively set the user
-      setUser(userCredential.user);
+      setUser(userCredential.user); // Eagerly set user
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -169,8 +183,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const userCredential = await firebaseSignInWithEmailAndPassword(auth, email, password);
-      await fetchAppUser(userCredential.user);
-      router.push('/dashboard');
+      if (userCredential.user) {
+        await fetchAppUser(userCredential.user);
+        router.push('/dashboard');
+      } else {
+        // This case is unlikely with Firebase SDK but good to handle
+        setLoading(false);
+        return "Login failed: No authentication details received.";
+      }
     } catch (error: any) {
       console.error('Sign in error:', error);
       setLoading(false);
@@ -186,6 +206,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
+    } finally {
+        setLoading(false);
     }
   };
 
