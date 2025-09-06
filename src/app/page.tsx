@@ -1,166 +1,141 @@
+
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Flame, Sword } from "lucide-react";
-import { RecommendationForm } from "@/components/recommendation-form";
-import { dailyTasks, currentMissions, rankings } from "@/lib/data";
-import { useAuth } from "@/hooks/use-auth";
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/use-auth';
+import { Gem, CheckCircle, Flame, Trophy, Users, Gift, Star } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
+const features = [
+    {
+      icon: <CheckCircle className="h-8 w-8 text-primary" />,
+      title: "Task Management",
+      description: "Create, track, and complete tasks to earn XP and level up your life.",
+    },
+    {
+      icon: <Flame className="h-8 w-8 text-primary" />,
+      title: "Missions & Quests",
+      description: "Embark on guided missions to achieve your long-term goals.",
+    },
+    {
+      icon: <Trophy className="h-8 w-8 text-primary" />,
+      title: "Achievements & Rewards",
+      description: "Unlock badges and rewards for your accomplishments and milestones.",
+    },
+    {
+      icon: <Users className="h-8 w-8 text-primary" />,
+      title: "Leaderboards",
+      description: "Compete with others and climb the ranks to become a top user.",
+    },
+    {
+      icon: <Star className="h-8 w-8 text-primary" />,
+      title: "AI Recommendations",
+      description: "Get personalized tasks and missions suggested by our AI.",
+    },
+    {
+      icon: <Gift className="h-8 w-8 text-primary" />,
+      title: "Gamified Experience",
+      description: "Turn self-improvement into a fun and engaging game.",
+    },
+  ];
 
-export default function DashboardPage() {
-  const { user, appUser } = useAuth();
+export default function LandingPage() {
+  const { user, loading, signInWithGoogle } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
   
-  const displayName = user?.displayName || "Player One";
-  const level = appUser?.level || 1;
-  const xp = appUser?.xp || 0;
-  const xpToNextLevel = level * 1000;
-  const xpPercentage = (xp / xpToNextLevel) * 100;
-
+  if (loading || user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Gem className="h-12 w-12 animate-pulse text-primary" />
+      </div>
+    );
+  }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <Card className="lg:col-span-3 bg-card/50 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl md:text-3xl">
-            Welcome Back, {displayName}
-          </CardTitle>
-          <CardDescription>
-            Your progress is looking great. Keep it up!
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4">
-            <div className="text-lg font-bold">LV. {level}</div>
-            <div className="flex-1">
-              <Progress value={xpPercentage} className="h-4" />
-              <div className="text-right text-xs text-muted-foreground mt-1">
-                {xp} / {xpToNextLevel} XP
-              </div>
+    <div className="flex flex-col min-h-screen">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center">
+          <div className="mr-auto flex items-center gap-2">
+            <Gem className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl font-bold font-headline">System Ascent</h1>
+          </div>
+          <nav className="flex items-center gap-4">
+            <Button variant="ghost" onClick={signInWithGoogle}>Login</Button>
+            <Button onClick={signInWithGoogle}>Sign Up</Button>
+          </nav>
+        </div>
+      </header>
+      <main className="flex-1">
+        <section className="py-20 md:py-32 lg:py-40">
+            <div className="container text-center">
+                <h1 className="text-4xl font-bold tracking-tight font-headline md:text-5xl lg:text-6xl">
+                    Level Up Your Life
+                </h1>
+                <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl">
+                    System Ascent turns your self-improvement journey into an epic RPG. Complete tasks, conquer missions, and earn rewards to become the best version of yourself.
+                </p>
+                <div className="mt-8 flex justify-center gap-4">
+                    <Button size="lg" onClick={signInWithGoogle}>Begin Your Ascent</Button>
+                    <Button size="lg" variant="outline" asChild>
+                        <Link href="#features">Learn More</Link>
+                    </Button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="features" className="py-20 md:py-28 bg-muted/30">
+            <div className="container">
+                <div className="text-center">
+                    <h2 className="text-3xl font-bold font-headline">How The System Works</h2>
+                    <p className="mt-2 text-lg text-muted-foreground">Everything you need to gamify your personal growth.</p>
+                </div>
+
+                <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    {features.map((feature, index) => (
+                        <div key={index} className="p-6 rounded-lg bg-card border">
+                            <div className="flex items-center gap-4">
+                                {feature.icon}
+                                <h3 className="text-xl font-bold">{feature.title}</h3>
+                            </div>
+                            <p className="mt-4 text-muted-foreground">{feature.description}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        <section className="py-20 md:py-28">
+          <div className="container text-center max-w-4xl">
+            <h2 className="text-3xl font-bold font-headline">Ready to Start Your Journey?</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Join thousands of others on their quest for self-improvement. Your adventure begins now.
+            </p>
+            <div className="mt-8">
+              <Button size="lg" className="h-12 text-lg" onClick={signInWithGoogle}>
+                Sign Up & Start Leveling Up
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </section>
+      </main>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="font-headline text-xl">Daily Tasks</CardTitle>
-          <Sword className="h-6 w-6 text-accent" />
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {dailyTasks.map((task) => (
-              <li
-                key={task.id}
-                className="flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-secondary"
-              >
-                <CheckCircle2
-                  className={`h-5 w-5 ${
-                    task.completed
-                      ? "text-accent"
-                      : "text-muted-foreground"
-                  }`}
-                />
-                <span
-                  className={`flex-1 ${
-                    task.completed ? "line-through text-muted-foreground" : ""
-                  }`}
-                >
-                  {task.title}
-                </span>
-                <Badge variant="outline" className="font-mono text-xs">{task.category}</Badge>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="font-headline text-xl">
-            Current Missions
-          </CardTitle>
-          <Flame className="h-6 w-6 text-accent" />
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-4">
-            {currentMissions.map((mission) => (
-              <li key={mission.id} className="group">
-                <p className="font-semibold">{mission.title}</p>
-                <p className="text-sm text-muted-foreground">
-                  {mission.description}
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <Progress value={mission.progress} className="h-2 w-3/4" />
-                  <span className="text-xs font-bold text-accent">
-                    +{mission.xp} XP
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-      
-      <Card className="md:col-span-2 lg:col-span-1">
-        <CardHeader>
-          <CardTitle className="font-headline text-xl">Rankings</CardTitle>
-          <CardDescription>Your position on the leaderboard.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableBody>
-              {rankings.slice(0, 4).map((player) => (
-                <TableRow key={player.rank}>
-                  <TableCell className="font-medium">#{player.rank}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={player.name === 'Player One' && user?.photoURL ? user.photoURL : player.avatarUrl} alt={player.name} data-ai-hint="avatar" />
-                        <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <span>{player.name === 'Player One' && user?.displayName ? user.displayName : player.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    LV. {player.level}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <Card className="lg:col-span-3">
-        <CardHeader>
-          <CardTitle className="font-headline text-xl">
-            Personalized Recommendations
-          </CardTitle>
-          <CardDescription>
-            Let the system generate new challenges for you.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RecommendationForm />
-        </CardContent>
-      </Card>
+      <footer className="border-t py-6">
+        <div className="container flex items-center justify-between">
+          <p className="text-muted-foreground">&copy; {new Date().getFullYear()} System Ascent. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            <Gem className="h-6 w-6 text-primary" />
+            <span className="font-bold font-headline">System Ascent</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

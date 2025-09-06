@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -31,7 +32,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useEffect } from 'react';
 
 const menuItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutGrid },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
   { href: '/profile', label: 'Profile', icon: User },
   { href: '/tasks', label: 'Tasks', icon: CheckSquare },
   { href: '/missions', label: 'Missions', icon: Flame },
@@ -45,14 +46,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  const isAuthPage = pathname === '/login' || pathname === '/';
+
   useEffect(() => {
-    if (!loading && !user && pathname !== '/login') {
-      router.push('/login');
+    if (!loading && !user && !isAuthPage) {
+      router.push('/');
     }
-  }, [user, loading, pathname, router]);
+  }, [user, loading, pathname, router, isAuthPage]);
 
 
-  if (pathname === '/login') {
+  if (isAuthPage) {
     return <>{children}</>;
   }
   
@@ -62,6 +65,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <Gem className="h-12 w-12 animate-pulse text-primary" />
       </div>
     );
+  }
+  
+  if (!user) {
+    return null;
   }
 
   return (

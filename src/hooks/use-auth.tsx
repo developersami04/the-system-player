@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -83,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      router.push('/');
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error signing in with Google:', error);
       setLoading(false);
@@ -93,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       await auth.signOut();
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
     }

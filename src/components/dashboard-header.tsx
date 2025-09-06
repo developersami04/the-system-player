@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -16,7 +17,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 
 const pageTitles: { [key: string]: string } = {
-  '/': 'Dashboard',
+  '/dashboard': 'Dashboard',
   '/profile': 'Profile',
   '/tasks': 'Tasks',
   '/missions': 'Missions',
