@@ -11,6 +11,7 @@ import {
 import {
   onAuthStateChanged,
   GoogleAuthProvider,
+  FacebookAuthProvider,
   signInWithPopup,
   User,
 } from 'firebase/auth';
@@ -24,6 +25,7 @@ interface AuthContextType {
   appUser: AppUser | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
   signOut: () => Promise<void>;
   updateUserXp: (xpToAdd: number) => Promise<void>;
 }
@@ -91,6 +93,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithFacebook = async () => {
+    setLoading(true);
+    const provider = new FacebookAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error signing in with Facebook:', error);
+      setLoading(false);
+    }
+  };
+
   const signOut = async () => {
     try {
       await auth.signOut();
@@ -126,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     appUser,
     loading,
     signInWithGoogle,
+    signInWithFacebook,
     signOut,
     updateUserXp,
   };
