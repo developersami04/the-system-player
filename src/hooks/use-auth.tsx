@@ -15,8 +15,8 @@ import {
   signInWithPopup,
   User,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db, app } from '@/lib/firebase';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import type { AppUser } from '@/lib/types';
 
@@ -41,15 +41,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchAppUser = async (firebaseUser: User) => {
     const userRef = doc(db, 'users', firebaseUser.uid);
     const docSnap = await getDoc(userRef);
+
     if (docSnap.exists()) {
-      setAppUser(docSnap.data() as AppUser);
+      const userData = docSnap.data() as AppUser;
+      setAppUser({
+        ...userData,
+        // @ts-ignore
+        createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
+      });
     }
   }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setLoading(true);
       if (user) {
-        // User is signed in.
         const userRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(userRef);
         if (!docSnap.exists()) {
@@ -59,19 +65,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
-            createdAt: new Date(),
+            // @ts-ignore
+            createdAt: serverTimestamp(),
             level: 1,
             xp: 0,
           };
-          await setDoc(userRef, newUser);
-          setAppUser(newUser);
+          try {
+            await setDoc(userRef, newUser);
+            setAppUser({ ...newUser, createdAt: new Date() });
+          } catch(e) {
+             console.error("Error creating user doc", e)
+          }
         } else {
-          setAppUser(docSnap.data() as AppUser);
+            const userData = docSnap.data() as AppUser;
+            setAppUser({
+                ...userData,
+                // @ts-ignore
+                createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
+            });
         }
         setUser(user);
-
       } else {
-        // User is signed out.
         setUser(null);
         setAppUser(null);
       }
@@ -81,36 +95,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const signInWithGoogle = async () => {
+  const handleSignIn = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
     setLoading(true);
-    const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      router.push('/dashboard');
+        await signInWithPopup(auth, provider);
+        router.push('/dashboard');
     } catch (error) {
-      console.error('Error signing in with Google:', error);
-      setLoading(false);
+        console.error('Sign in error:', error);
+        // Optionally, show a toast notification to the user
+    } finally {
+        // setLoading(false) is handled by onAuthStateChanged
     }
+  }
+
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    await handleSignIn(provider)
   };
 
   const signInWithFacebook = async () => {
-    setLoading(true);
     const provider = new FacebookAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Error signing in with Facebook:', error);
-      setLoading(false);
-    }
+    await handleSignIn(provider)
   };
 
   const signOut = async () => {
+    setLoading(true);
     try {
       await auth.signOut();
       router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
+    } finally {
+      // setLoading(false) is handled by onAuthStateChanged
     }
   };
 

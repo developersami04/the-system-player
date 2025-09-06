@@ -6,7 +6,8 @@ export interface Task {
     category: typeof TASK_CATEGORIES[number];
     completed: boolean;
     dueDate: Date;
-    xp: number;
+    createdAt: Date;
+    xp?: number;
 }
 
 export interface Mission {

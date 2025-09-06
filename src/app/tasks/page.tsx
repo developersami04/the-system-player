@@ -33,7 +33,9 @@ export default function TasksPage() {
   };
 
   useEffect(() => {
-    fetchTasks();
+    if(user) {
+        fetchTasks();
+    }
   }, [user]);
 
   const handleTaskToggle = async (task: Task, completed: boolean) => {
