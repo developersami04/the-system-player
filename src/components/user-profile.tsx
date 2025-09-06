@@ -3,6 +3,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/hooks/use-auth';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
+import { Button } from './ui/button';
 
 export function UserProfile() {
   const { user, appUser } = useAuth();
@@ -17,23 +19,18 @@ export function UserProfile() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-2 p-2 group-data-[collapsible=icon]:items-center">
-      <div className="flex items-center gap-2">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={user.photoURL!} alt={user.displayName!} data-ai-hint="avatar" />
-          <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1 overflow-hidden group-data-[collapsible=icon]:hidden">
-          <p className="truncate font-semibold">{user.displayName}</p>
-          <p className="text-xs text-muted-foreground">Level {level}</p>
-        </div>
-      </div>
-      <div className="w-full overflow-hidden group-data-[collapsible=icon]:hidden">
-        <Progress value={xpPercentage} className="h-2" />
-        <p className="mt-1 text-right text-xs text-muted-foreground">
-          {xp} / {xpToNextLevel} XP
-        </p>
-      </div>
-    </div>
+    <Card>
+        <CardHeader className="p-2 pt-0 md:p-4">
+          <CardTitle>Level Up!</CardTitle>
+          <CardDescription>
+            Complete tasks to earn more XP and unlock new features.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
+          <Button size="sm" className="w-full">
+            View Tasks
+          </Button>
+        </CardContent>
+      </Card>
   );
 }
