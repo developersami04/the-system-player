@@ -7,6 +7,7 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from 'react';
 import {
   onAuthStateChanged,
@@ -66,27 +67,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchAppUser = async (firebaseUser: User) => {
+  const fetchAppUser = useCallback(async (firebaseUser: User) => {
     const userRef = doc(db, 'users', firebaseUser.uid);
-    const docSnap = await getDoc(userRef);
+    try {
+      const docSnap = await getDoc(userRef);
 
-    if (docSnap.exists()) {
-      const userData = docSnap.data() as AppUser;
-      setAppUser({
-        ...userData,
-        // @ts-ignore
-        createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
-      });
+      if (docSnap.exists()) {
+        const userData = docSnap.data() as AppUser;
+        setAppUser({
+          ...userData,
+          // @ts-ignore
+          createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
+        });
+      }
+    } catch (error) {
+        console.error("Error fetching app user:", error);
+        // Handle offline error gracefully if needed
     }
-  }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setLoading(true);
       if (user) {
+        setUser(user);
         const userRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(userRef);
-        if (!docSnap.exists()) {
+        const docSnap = await getDoc(userRef).catch(err => {
+            console.warn("Could not fetch user document, maybe offline?", err)
+            return null;
+        });
+
+        if (docSnap && docSnap.exists()) {
+            const userData = docSnap.data() as AppUser;
+            setAppUser({
+                ...userData,
+                // @ts-ignore
+                createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
+            });
+        } else if (docSnap === null) {
+            // Offline and no cached doc, do nothing, wait for online
+        } else {
           // New user, create a document in Firestore
           const newUser: AppUser = {
             uid: user.uid,
@@ -104,15 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } catch(e) {
              console.error("Error creating user doc", e)
           }
-        } else {
-            const userData = docSnap.data() as AppUser;
-            setAppUser({
-                ...userData,
-                // @ts-ignore
-                createdAt: userData.createdAt?.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt),
-            });
         }
-        setUser(user);
       } else {
         setUser(null);
         setAppUser(null);
@@ -131,8 +143,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
         console.error('Sign in error:', error);
         return getFirebaseAuthErrorMessage(error.code);
-    } finally {
-        // setLoading(false) is handled by onAuthStateChanged
     }
   }
 
@@ -156,8 +166,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('Sign up error:', error);
       return getFirebaseAuthErrorMessage(error.code);
-    } finally {
-        // setLoading(false) will be called by onAuthStateChanged
     }
   };
 
@@ -169,8 +177,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('Sign in error:', error);
       return getFirebaseAuthErrorMessage(error.code);
-    } finally {
-      // setLoading(false) will be called by onAuthStateChanged
     }
   };
 
@@ -182,8 +188,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
-    } finally {
-      // setLoading(false) is handled by onAuthStateChanged
     }
   };
 
@@ -230,5 +234,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-    
