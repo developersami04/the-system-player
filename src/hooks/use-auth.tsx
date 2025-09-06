@@ -53,7 +53,7 @@ const getFirebaseAuthErrorMessage = (errorCode: string): string => {
     case 'auth/weak-password':
       return 'The password is too weak. Please use a stronger password.';
     case 'auth/operation-not-allowed':
-        return 'Email/password accounts are not enabled.';
+        return 'Email & Password sign-in is not enabled. Please contact support.';
     default:
       return 'An unexpected error occurred. Please try again.';
   }
