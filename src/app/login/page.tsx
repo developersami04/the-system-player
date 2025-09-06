@@ -4,21 +4,67 @@
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gem, Facebook } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Gem, Facebook, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 
 const GoogleIcon = () => <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-76.3 64.5c-24.5-23.4-58.3-38.2-96.6-38.2-87.5 0-159.2 71.7-159.2 159.2s71.7 159.2 159.2 159.2c94.3 0 135.3-65.6 140.8-103.9H248v-85.3h236.1c2.3 12.7 3.9 26.9 3.9 41.4z"></path></svg>;
 
+const signUpSchema = z.object({
+  displayName: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+});
+
+const signInSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  password: z.string().min(1, { message: 'Password is required.' }),
+});
+
 export default function LoginPage() {
-  const { user, loading, signInWithGoogle, signInWithFacebook } = useAuth();
+  const { user, loading, signInWithGoogle, signInWithFacebook, signUpWithEmailAndPassword, signInWithEmailAndPassword } = useAuth();
   const router = useRouter();
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const signUpForm = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: { displayName: '', email: '', password: '' },
+  });
+
+  const signInForm = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: { email: '', password: '' },
+  });
 
   useEffect(() => {
     if (!loading && user) {
       router.push('/dashboard');
     }
   }, [user, loading, router]);
+  
+  const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
+    setAuthError(null);
+    const error = await signUpWithEmailAndPassword(values.email, values.password, values.displayName);
+    if (error) {
+      setAuthError(error);
+    }
+  };
+
+  const handleSignIn = async (values: z.infer<typeof signInSchema>) => {
+    setAuthError(null);
+    const error = await signInWithEmailAndPassword(values.email, values.password);
+    if (error) {
+        setAuthError(error);
+    }
+  };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -28,27 +74,149 @@ export default function LoginPage() {
             <Gem className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold font-headline">System Ascent</h1>
           </div>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Sign in to continue your ascent.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Button
-            className="w-full"
-            onClick={signInWithGoogle}
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : <><GoogleIcon /> Sign in with Google</>}
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={signInWithFacebook}
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : <><Facebook className="mr-2 h-4 w-4" /> Sign in with Facebook</>}
-          </Button>
+        <CardContent>
+          <Tabs defaultValue="sign-in">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="sign-in">Sign In</TabsTrigger>
+              <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
+            </TabsList>
+            <TabsContent value="sign-in">
+                <CardHeader>
+                    <CardTitle>Welcome Back</CardTitle>
+                    <CardDescription>Sign in to continue your ascent.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Form {...signInForm}>
+                      <form onSubmit={signInForm.handleSubmit(handleSignIn)} className="space-y-4">
+                        <FormField
+                          control={signInForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label htmlFor="email-signin">Email</Label>
+                              <FormControl>
+                                <Input id="email-signin" type="email" placeholder="m@example.com" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                         <FormField
+                          control={signInForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label htmlFor="password-signin">Password</Label>
+                              <FormControl>
+                                <Input id="password-signin" type="password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Sign In
+                        </Button>
+                      </form>
+                    </Form>
+                </CardContent>
+            </TabsContent>
+            <TabsContent value="sign-up">
+                <CardHeader>
+                    <CardTitle>Create an Account</CardTitle>
+                    <CardDescription>Begin your journey with us today.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Form {...signUpForm}>
+                      <form onSubmit={signUpForm.handleSubmit(handleSignUp)} className="space-y-4">
+                        <FormField
+                          control={signUpForm.control}
+                          name="displayName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label htmlFor="displayName">Username</Label>
+                              <FormControl>
+                                <Input id="displayName" placeholder="Player One" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={signUpForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label htmlFor="email-signup">Email</Label>
+                              <FormControl>
+                                <Input id="email-signup" type="email" placeholder="m@example.com" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                         <FormField
+                          control={signUpForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label htmlFor="password-signup">Password</Label>
+                              <FormControl>
+                                <Input id="password-signup" type="password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Create Account
+                        </Button>
+                      </form>
+                    </Form>
+                </CardContent>
+            </TabsContent>
+          </Tabs>
+
+          {authError && (
+            <p className="text-center text-sm text-destructive mt-4">{authError}</p>
+          )}
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={signInWithGoogle}
+              disabled={loading}
+            >
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <><GoogleIcon /> Google</>}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={signInWithFacebook}
+              disabled={loading}
+            >
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <><Facebook className="mr-2 h-4 w-4" /> Facebook</>}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    

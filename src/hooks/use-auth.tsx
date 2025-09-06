@@ -13,6 +13,9 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
+  updateProfile,
   User,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
@@ -26,11 +29,36 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
+  signUpWithEmailAndPassword: (email: string, password: string, displayName: string) => Promise<string | undefined>;
+  signInWithEmailAndPassword: (email: string, password: string) => Promise<string | undefined>;
   signOut: () => Promise<void>;
   updateUserXp: (xpToAdd: number) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Helper to get a user-friendly error message
+const getFirebaseAuthErrorMessage = (errorCode: string): string => {
+  switch (errorCode) {
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    case 'auth/user-disabled':
+      return 'This user account has been disabled.';
+    case 'auth/user-not-found':
+      return 'No user found with this email.';
+    case 'auth/wrong-password':
+      return 'Incorrect password. Please try again.';
+    case 'auth/email-already-in-use':
+      return 'This email is already in use by another account.';
+    case 'auth/weak-password':
+      return 'The password is too weak. Please use a stronger password.';
+    case 'auth/operation-not-allowed':
+        return 'Email/password accounts are not enabled.';
+    default:
+      return 'An unexpected error occurred. Please try again.';
+  }
+};
+
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -100,9 +128,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
         await signInWithPopup(auth, provider);
         router.push('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
         console.error('Sign in error:', error);
-        // Optionally, show a toast notification to the user
+        return getFirebaseAuthErrorMessage(error.code);
     } finally {
         // setLoading(false) is handled by onAuthStateChanged
     }
@@ -117,6 +145,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const provider = new FacebookAuthProvider();
     await handleSignIn(provider)
   };
+
+  const signUpWithEmailAndPassword = async (email: string, password: string, displayName: string) => {
+    setLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName });
+      // The onAuthStateChanged listener will handle the rest
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      return getFirebaseAuthErrorMessage(error.code);
+    } finally {
+        // setLoading(false) will be called by onAuthStateChanged
+    }
+  };
+
+  const signInWithEmailAndPassword = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      await firebaseSignInWithEmailAndPassword(auth, email, password);
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      return getFirebaseAuthErrorMessage(error.code);
+    } finally {
+      // setLoading(false) will be called by onAuthStateChanged
+    }
+  };
+
 
   const signOut = async () => {
     setLoading(true);
@@ -159,6 +216,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signInWithFacebook,
     signOut,
     updateUserXp,
+    signUpWithEmailAndPassword,
+    signInWithEmailAndPassword
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -171,3 +230,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+    
