@@ -1,18 +1,12 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
 export function UserProfile() {
   const { user, appUser } = useAuth();
-
-  const level = appUser?.level || 1;
-  const xp = appUser?.xp || 0;
-  const xpToNextLevel = level * 1000;
-  const xpPercentage = (xp / xpToNextLevel) * 100;
 
   if (!user || !appUser) {
     return null;
@@ -27,8 +21,8 @@ export function UserProfile() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-          <Button size="sm" className="w-full">
-            View Tasks
+          <Button size="sm" className="w-full" asChild>
+            <Link href="/tasks">View Tasks</Link>
           </Button>
         </CardContent>
       </Card>

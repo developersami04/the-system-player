@@ -35,6 +35,7 @@ import {
 } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 
 const mainNavItems = [
@@ -50,7 +51,7 @@ const bottomNavItems = [
     { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/tasks', label: 'Tasks', icon: Target },
     { href: '/missions', label: 'Missions', icon: Rocket },
-    { href: '/rankings', label: 'Friends', icon: Users },
+    { href: '/rankings', label: 'Rankings', icon: Users },
     { href: '/profile', label: 'Profile', icon: User },
 ]
 
@@ -113,7 +114,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
           <div className="mt-auto p-4">
-            <UserProfile />
+            <Card>
+              <CardHeader className="p-2 pt-0 md:p-4">
+                <CardTitle>Level Up!</CardTitle>
+                <CardDescription>
+                  Complete tasks to earn more XP and unlock new features.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
+                <Button size="sm" className="w-full" asChild>
+                  <Link href="/tasks">View Tasks</Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </aside>
