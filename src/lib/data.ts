@@ -1,20 +1,20 @@
 import type { Task, Mission, UserRank, Achievement, Reward } from './types';
 
-export const dailyTasks: Omit<Task, 'dueDate' | 'category'>[] & { category: string }[] = [
-  { id: '1', title: 'Read 30 pages of a book', category: 'Growth', completed: true },
-  { id: '2', title: 'Complete a coding challenge', category: 'Skills', completed: false },
-  { id: '3', title: 'Go for a 20-minute run', category: 'Health', completed: false },
-  { id: '4', title: 'Practice drawing for 15 minutes', category: 'Creative', completed: true },
+export const dailyTasks: (Omit<Task, 'dueDate' | 'createdAt'> & {xp: number})[] = [
+  { id: '1', title: 'Read 30 pages of a book', category: 'Growth', completed: true, xp: 100 },
+  { id: '2', title: 'Complete a coding challenge', category: 'Skills', completed: false, xp: 150 },
+  { id: '3', title: 'Go for a 20-minute run', category: 'Health', completed: false, xp: 75 },
+  { id: '4', title: 'Practice drawing for 15 minutes', category: 'Creative', completed: true, xp: 50 },
 ];
 
 export const allTasks: Task[] = [
-    { id: '1', title: 'Read 30 pages of a book', category: 'Growth', completed: true, dueDate: new Date() },
-    { id: '2', title: 'Complete a coding challenge', category: 'Skills', completed: false, dueDate: new Date() },
-    { id: '3', title: 'Go for a 20-minute run', category: 'Health', completed: false, dueDate: new Date(new Date().getTime() + 86400000) },
-    { id: '4', title: 'Practice drawing for 15 minutes', category: 'Creative', completed: true, dueDate: new Date() },
-    { id: '5', title: 'Learn a new song on an instrument', category: 'Creative', completed: false, dueDate: new Date(new Date().getTime() + 2 * 86400000) },
-    { id: '6', title: 'Finish a module in an online course', category: 'Skills', completed: true, dueDate: new Date() },
-    { id: '7', title: 'Meditate for 10 minutes', category: 'Health', completed: false, dueDate: new Date() },
+    { id: '1', title: 'Read 30 pages of a book', category: 'Growth', completed: true, dueDate: new Date(), createdAt: new Date() },
+    { id: '2', title: 'Complete a coding challenge', category: 'Skills', completed: false, dueDate: new Date(), createdAt: new Date() },
+    { id: '3', title: 'Go for a 20-minute run', category: 'Health', completed: false, dueDate: new Date(new Date().getTime() + 86400000), createdAt: new Date() },
+    { id: '4', title: 'Practice drawing for 15 minutes', category: 'Creative', completed: true, dueDate: new Date(), createdAt: new Date() },
+    { id: '5', title: 'Learn a new song on an instrument', category: 'Creative', completed: false, dueDate: new Date(new Date().getTime() + 2 * 86400000), createdAt: new Date() },
+    { id: '6', title: 'Finish a module in an online course', category: 'Skills', completed: true, dueDate: new Date(), createdAt: new Date() },
+    { id: '7', title: 'Meditate for 10 minutes', category: 'Health', completed: false, dueDate: new Date(), createdAt: new Date() },
   ];
 
 export const currentMissions: Mission[] = [
@@ -66,12 +66,12 @@ export const allMissions: Omit<Mission, 'progress'>[] = [
 export const rankings: UserRank[] = [
   { rank: 1, name: 'Shadow Monarch', level: 99, xp: 999999, avatarUrl: 'https://picsum.photos/100?a=1' },
   { rank: 2, name: 'Flame Alchemist', level: 95, xp: 950123, avatarUrl: 'https://picsum.photos/100?a=2' },
-  { rank: 3, name: 'Player One', level: 94, xp: 940000, avatarUrl: 'https://picsum.photos/100' },
-  { rank: 4, name: 'Silent Hunter', level: 92, xp: 923456, avatarUrl: 'https://picsum.photos/100?a=4' },
-  { rank: 5, name: 'Code Breaker', level: 90, xp: 901234, avatarUrl: 'https://picsum.photos/100?a=5' },
-  { rank: 6, name: 'Artisan Soul', level: 88, xp: 880000, avatarUrl: 'https://picsum.photos/100?a=6' },
-  { rank: 7, name: 'Agile Runner', level: 85, xp: 854321, avatarUrl: 'https://picsum.photos/100?a=7' },
-  { rank: 8, name: 'Newbie Hero', level: 12, xp: 12500, avatarUrl: 'https://picsum.photos/100?a=8' },
+  { rank: 3, name: 'Silent Hunter', level: 92, xp: 923456, avatarUrl: 'https://picsum.photos/100?a=4' },
+  { rank: 4, name: 'Code Breaker', level: 90, xp: 901234, avatarUrl: 'https://picsum.photos/100?a=5' },
+  { rank: 5, name: 'Artisan Soul', level: 88, xp: 880000, avatarUrl: 'https://picsum.photos/100?a=6' },
+  { rank: 6, name: 'Agile Runner', level: 85, xp: 854321, avatarUrl: 'https://picsum.photos/100?a=7' },
+  { rank: 7, name: 'Newbie Hero', level: 12, xp: 12500, avatarUrl: 'https://picsum.photos/100?a=8' },
+  { rank: 8, name: 'Player One', level: 1, xp: 0, avatarUrl: 'https://picsum.photos/100?a=3' },
 ];
 
 export const achievements: Achievement[] = [
