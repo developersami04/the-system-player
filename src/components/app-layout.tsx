@@ -216,7 +216,3 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-function cn(...classes: (string | undefined | boolean)[]) {
-    return classes.filter(Boolean).join(' ');
-}
